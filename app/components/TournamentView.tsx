@@ -270,7 +270,7 @@ export default function TournamentView() {
             </div>
 
             {activeTab === 'inscritos' && (
-              <div style={{ height: 'calc(8 * 3.7rem)', overflow: 'hidden' }}>
+              <div style={{ height: 'calc(8 * 3.8rem)', overflow: 'hidden' }}>
                 <Table>
                   <TableHeader>
                     <TableRow>
