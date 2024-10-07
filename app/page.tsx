@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import TournamentHero from './components/HeroSection'
 import Footer from './components/Footer'
 
