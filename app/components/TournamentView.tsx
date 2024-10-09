@@ -8,10 +8,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Users } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { Command, CommandInput,  } from "@/components/ui/command"
 import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay } from '@dnd-kit/core'
 import { useDroppable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
 
 // Simulated data types
 type Player = {
