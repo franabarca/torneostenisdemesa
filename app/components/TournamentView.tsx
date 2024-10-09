@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { Command, CommandInput,  } from "@/components/ui/command"
 import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay } from '@dnd-kit/core'
 import { useDroppable } from '@dnd-kit/core'
+import {CSS} from '@dnd-kit/utilities';
 
 // Simulated data types
 type Player = {
@@ -127,8 +128,12 @@ const organizeGroups = (players: Player[]): Player[][] => {
 export function Droppable({ id, children }: { id: string; children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
+  const style = {
+    opacity: isOver ? 1 : 0.5,
+  };
+
   return (
-    <div ref={setNodeRef} className={`group ${isOver ? 'bg-orange-100' : ''}`}>
+    <div ref={setNodeRef} style={style} className={`group ${isOver ? 'bg-orange-100' : ''}`}>
       {children}
     </div>
   )
@@ -140,7 +145,7 @@ function DraggablePlayer({ player, index }: { player: Player; index: number }) {
   });
 
   const style = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transform: CSS.Translate.toString(transform),
     cursor: isDragging ? 'grabbing' : 'grab',
   };
 
