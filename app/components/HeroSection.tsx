@@ -5,16 +5,16 @@ import { Trophy, Users, Star } from "lucide-react"
 
 export default function TournamentHero() {
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-background to-secondary">
-      <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-4 text-center">
+    <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-background to-secondary flex items-center justify-center min-h-screen">
+      <div className="container px-4 md:px-6 mx-auto">
+        <div className="flex flex-col items-center space-y-4 text-center max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl md:text-6xl">Sistema de Gestión de Torneos</h1>
           <p className="max-w-[700px] text-muted-foreground md:text-xl">
             Crea, gestiona y participa en torneos. Sigue el ranking de jugadores y mantente actualizado sobre las últimas competiciones.
           </p>
         </div>
 
-        <div className="grid gap-6 mt-12 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 mt-12 md:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
           {/* Create Tournaments Section */}
           <Card className="flex flex-col h-full pb-4">
             <CardHeader>
@@ -29,7 +29,7 @@ export default function TournamentHero() {
                 Esta función estará disponible próximamente. La creación de torneos estará disponible en futuras actualizaciones.
               </p>
             </CardContent>
-            <Button className="mt-auto self-center mb-4 w-full" disabled>Crear Torneo</Button>
+            <Button className="mt-auto self-center mb-4 w-full bg-orange-600 hover:bg-orange-500 " disabled>Crear Torneo</Button>
           </Card>
 
           {/* View Tournaments Section */}
@@ -47,7 +47,7 @@ export default function TournamentHero() {
               </p>
             </CardContent>
             <Link href="/tournaments">
-              <Button className="mt-auto self-center mb-4 w-full">Ver Torneos</Button>
+              <Button className="mt-auto self-center mb-4 w-full bg-orange-600 hover:bg-orange-500">Ver Torneos</Button>
             </Link>
           </Card>
 
@@ -66,7 +66,7 @@ export default function TournamentHero() {
               </p>
             </CardContent>
             <Link href="/rankings " >
-              <Button className="mt-auto self-center mb-4 w-full">Ver Clasificaciones</Button>
+              <Button className="mt-auto self-center mb-4 w-full bg-orange-600 hover:bg-orange-500">Ver Clasificaciones</Button>
             </Link>
           </Card>
         </div>

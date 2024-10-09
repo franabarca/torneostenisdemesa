@@ -8,6 +8,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Users } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay } from '@dnd-kit/core'
+import { useDroppable } from '@dnd-kit/core'
+import { CSS } from '@dnd-kit/utilities'
 
 // Simulated data types
 type Player = {
@@ -64,9 +68,9 @@ const fetchTournaments = async (): Promise<Tournament[]> => {
       name: 'Winter Challenge 2023',
       date: '2023-12-10',
       players: [
-        { id: '4', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '5', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '6', name: 'Eva Wilson', birthDate: '1993-07-12', singles: false, doubles: true, level: 'Principiante' },
+        { id: '21', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '22', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '23', name: 'Eva Wilson', birthDate: '1993-07-12', singles: false, doubles: true, level: 'Principiante' },
         // Add more players as needed
       ]
     },
@@ -121,6 +125,39 @@ const organizeGroups = (players: Player[]): Player[][] => {
   return newGroups
 }
 
+export function Droppable({ id, children }: { id: string; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({ id })
+
+  return (
+    <div ref={setNodeRef} className={`group ${isOver ? 'bg-orange-100' : ''}`}>
+      {children}
+    </div>
+  )
+}
+
+function DraggablePlayer({ player, index }: { player: Player; index: number }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: player.id,
+  });
+
+  const style = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    cursor: isDragging ? 'grabbing' : 'grab',
+  };
+
+  return (
+    <li 
+      ref={setNodeRef} 
+      style={style}
+      {...listeners} 
+      {...attributes}
+      className={`mb-2 p-2 bg-gray-100 rounded flex justify-between items-center ${isDragging ? 'opacity-50' : ''}`}
+    >
+      <span className="mr-2 font-bold">{index + 1}</span>
+      <span className="truncate flex-grow">{player.name} - {player.level}</span>
+    </li>
+  );
+}
 
 export default function TournamentView() {
   const [tournaments, setTournaments] = useState<Tournament[]>([])
@@ -131,6 +168,12 @@ export default function TournamentView() {
   const [activeTab, setActiveTab] = useState('inscritos')
   const playersPerPage = 8
   const [deleteConfirmation, setDeleteConfirmation] = useState<{ show: boolean; playerId: string | null }>({ show: false, playerId: null })
+  const [searchQuery, setSearchQuery] = useState('')
+  const [groupsLocked, setGroupsLocked] = useState(false)
+  const [playingGroups, setPlayingGroups] = useState(false)
+  const [groupResults, setGroupResults] = useState<{ [groupId: string]: Player[] }>({})
+  const [activeId, setActiveId] = useState<string | null>(null)
+  const [activePlayer, setActivePlayer] = useState<Player | null>(null)
 
   useEffect(() => {
     fetchTournaments().then(data => {
@@ -160,7 +203,14 @@ export default function TournamentView() {
       const playersInCategory = selectedTournament.players.filter(player => player[category])
       const organizedGroups = organizeGroups(playersInCategory)
       setGroups(organizedGroups)
+      setGroupsLocked(false) // Desbloquea los grupos cuando se reorganizan
     }
+  }
+
+  const handleLockGroups = () => {
+    setGroupsLocked(true)
+    setPlayingGroups(true)
+    toast.success('Grupos mantenidos con éxito')
   }
 
   const handlePageChange = (newPage: number) => {
@@ -185,9 +235,9 @@ export default function TournamentView() {
     if (selectedTournament && deleteConfirmation.playerId) {
       const updatedPlayers = selectedTournament.players.filter(player => player.id !== deleteConfirmation.playerId)
       setSelectedTournament({ ...selectedTournament, players: updatedPlayers })
-      
-      const updatedTournaments = tournaments.map(tournament => 
-        tournament.id === selectedTournament.id 
+
+      const updatedTournaments = tournaments.map(tournament =>
+        tournament.id === selectedTournament.id
           ? { ...tournament, players: updatedPlayers }
           : tournament
       )
@@ -202,11 +252,65 @@ export default function TournamentView() {
     setDeleteConfirmation({ show: false, playerId: null })
   }
 
-  const paginatedPlayers = selectedTournament
-    ? selectedTournament.players.slice(currentPage * playersPerPage, (currentPage + 1) * playersPerPage)
+  const filteredPlayers = selectedTournament
+    ? selectedTournament.players.filter(player =>
+      player.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     : []
 
-  const totalPages = selectedTournament ? Math.ceil(selectedTournament.players.length / playersPerPage) : 0
+  const paginatedPlayers = searchQuery
+    ? filteredPlayers.slice(currentPage * playersPerPage, (currentPage + 1) * playersPerPage)
+    : selectedTournament
+      ? selectedTournament.players.slice(currentPage * playersPerPage, (currentPage + 1) * playersPerPage)
+      : []
+
+  const totalPages = searchQuery
+    ? Math.ceil(filteredPlayers.length / playersPerPage)
+    : selectedTournament
+      ? Math.ceil(selectedTournament.players.length / playersPerPage)
+      : 0
+
+  // Agregar esta nueva función para mover jugadores
+  const movePlayer = (groupIndex: number, playerIndex: number, direction: 'up' | 'down') => {
+    if (!groupsLocked) {
+      const newGroups = [...groups];
+      const group = [...newGroups[groupIndex]];
+      const newIndex = direction === 'up' ? playerIndex - 1 : playerIndex + 1;
+
+      if (newIndex >= 0 && newIndex < group.length) {
+        [group[playerIndex], group[newIndex]] = [group[newIndex], group[playerIndex]];
+        newGroups[groupIndex] = group;
+        setGroups(newGroups);
+      }
+    }
+  };
+
+  const sensors = useSensors(useSensor(PointerSensor))
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    setActiveId(null);  // Resetea el activeId al finalizar el arrastre
+    if (over && active.id !== over.id) {
+      const playerId = active.id as string;
+      const fromGroup = groups.findIndex(group => group.some(p => p.id === playerId));
+      const toGroup = parseInt(over.id as string, 10);
+      if (fromGroup !== -1 && !isNaN(toGroup)) {
+        const playerIndex = groups[fromGroup].findIndex(p => p.id === playerId);
+        if (playerIndex !== -1) {
+          const newGroups = [...groups];
+          const player = newGroups[fromGroup].splice(playerIndex, 1)[0];
+          newGroups[toGroup].unshift(player); // Añade el jugador al principio del nuevo grupo
+          setGroups(newGroups);
+        }
+      }
+    }
+  }
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const playerId = event.active.id as string;
+    const player = groups.flat().find(p => p.id === playerId);
+    setActivePlayer(player || null);
+  }
 
   if (loading) {
     return (
@@ -228,7 +332,7 @@ export default function TournamentView() {
           Volver
         </Button>
       </div>
-      
+
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Selecciona un Torneo</CardTitle>
@@ -257,6 +361,11 @@ export default function TournamentView() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* Agregar el buscador aquí */}
+            <Command className="mb-4">
+              <CommandInput placeholder="Buscar jugador..." onValueChange={setSearchQuery} />
+            </Command>
+
             <div className="flex justify-center mb-4 space-x-2">
               <Button onClick={() => handleTabChange('inscritos')} className={activeTab === 'inscritos' ? 'bg-blue-500 text-white' : ''}>
                 Inscritos
@@ -318,21 +427,50 @@ export default function TournamentView() {
 
             {(activeTab === 'singles' || activeTab === 'doubles') && (
               <div>
-                <Button onClick={() => handleOrganizeGroups(activeTab)} className="mt-4">
-                  <Users className="mr-2 h-4 w-4" /> Organizar Grupos de {activeTab === 'singles' ? 'Singles' : 'Dobles'}
-                </Button>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                  {groups.map((group, index) => (
-                    <div key={index} className="p-4 border rounded">
-                      <h3 className="font-bold mb-2">Grupo {index + 1}</h3>
-                      <ul>
-                        {group.map(player => (
-                          <li key={player.id}>{player.name} - {player.level}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ))}
+                <div className="flex space-x-2 mt-4">
+                  <Button
+                    onClick={() => handleOrganizeGroups(activeTab)}
+                    disabled={groupsLocked}
+                    className={`${groupsLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  >
+                    <Users className="mr-2 h-4 w-4" /> Organizar Grupos de {activeTab === 'singles' ? 'Singles' : 'Dobles'}
+                  </Button>
+                  {groups.length > 0 && (
+                    <Button onClick={handleLockGroups} disabled={groupsLocked}>
+                      Mantener Grupos
+                    </Button>
+                  )}
                 </div>
+                {playingGroups && (
+                  <div className="mt-4 flex items-center justify-center">
+                    <h3 className="text-xl font-bold mr-2">Jugando fase de grupos</h3>
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  </div>
+                )}
+                <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                    {groups.map((group, groupIndex) => (
+                      <Droppable key={`group-${groupIndex}`} id={groupIndex.toString()}>
+                        <div className="p-4 border rounded">
+                          <h3 className="font-bold mb-2">Grupo {groupIndex + 1}</h3>
+                          <ul className="space-y-2">
+                            {group.map((player, playerIndex) => (
+                              <DraggablePlayer key={player.id} player={player} index={playerIndex} />
+                            ))}
+                          </ul>
+                        </div>
+                      </Droppable>
+                    ))}
+                  </div>
+                  <DragOverlay>
+                    {activePlayer ? (
+                      <div className="p-2 bg-orange-400 text-white rounded shadow-lg flex items-center">
+                        <span className="mr-2 font-bold">{groups.flat().findIndex(p => p.id === activePlayer.id) + 1}</span>
+                        <span className="truncate flex-grow">{activePlayer.name} - {activePlayer.level}</span>
+                      </div>
+                    ) : null}
+                  </DragOverlay>
+                </DndContext>
               </div>
             )}
           </CardContent>
