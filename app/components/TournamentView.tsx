@@ -267,20 +267,6 @@ export default function TournamentView() {
       ? Math.ceil(selectedTournament.players.length / playersPerPage)
       : 0
 
-  // Agregar esta nueva función para mover jugadores
-  const movePlayer = (groupIndex: number, playerIndex: number, direction: 'up' | 'down') => {
-    if (!groupsLocked) {
-      const newGroups = [...groups];
-      const group = [...newGroups[groupIndex]];
-      const newIndex = direction === 'up' ? playerIndex - 1 : playerIndex + 1;
-
-      if (newIndex >= 0 && newIndex < group.length) {
-        [group[playerIndex], group[newIndex]] = [group[newIndex], group[playerIndex]];
-        newGroups[groupIndex] = group;
-        setGroups(newGroups);
-      }
-    }
-  };
 
   const sensors = useSensors(useSensor(PointerSensor))
 
