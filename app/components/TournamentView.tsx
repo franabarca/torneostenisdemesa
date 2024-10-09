@@ -170,8 +170,6 @@ export default function TournamentView() {
   const [searchQuery, setSearchQuery] = useState('')
   const [groupsLocked, setGroupsLocked] = useState(false)
   const [playingGroups, setPlayingGroups] = useState(false)
-  const [groupResults, setGroupResults] = useState<{ [groupId: string]: Player[] }>({})
-  const [activeId, setActiveId] = useState<string | null>(null)
   const [activePlayer, setActivePlayer] = useState<Player | null>(null)
 
   useEffect(() => {
@@ -288,7 +286,6 @@ export default function TournamentView() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
-    setActiveId(null);  // Resetea el activeId al finalizar el arrastre
     if (over && active.id !== over.id) {
       const playerId = active.id as string;
       const fromGroup = groups.findIndex(group => group.some(p => p.id === playerId));
