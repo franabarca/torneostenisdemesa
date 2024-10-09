@@ -9,7 +9,7 @@ import { Loader2, Users } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Command, CommandInput,  } from "@/components/ui/command"
-import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay } from '@dnd-kit/core'
+import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay, TouchSensor } from '@dnd-kit/core'
 import { useDroppable } from '@dnd-kit/core'
 import {CSS} from '@dnd-kit/utilities';
 
@@ -146,7 +146,8 @@ function DraggablePlayer({ player, index }: { player: Player; index: number }) {
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    cursor: isDragging ? 'grabbing' : 'grab',
+    cursor: 'grab',
+    touchAction: 'none', // Añade esta línea
   };
 
   return (
@@ -273,7 +274,19 @@ export default function TournamentView() {
       : 0
 
 
-  const sensors = useSensors(useSensor(PointerSensor))
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
