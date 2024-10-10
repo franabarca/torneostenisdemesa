@@ -12,7 +12,6 @@ import { Command, CommandInput, } from "@/components/ui/command"
 import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay, TouchSensor } from '@dnd-kit/core'
 import { useDroppable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities';
-import { useRouter } from 'next/navigation'
 import Llaves from './Llaves'
 
 // Simulated data types
@@ -165,7 +164,10 @@ export function Droppable({ id, children }: { id: string; children: React.ReactN
   )
 }
 
-function DraggablePlayer({ player, index, playingGroups }: { player: Player; index: number, playingGroups: any }) {
+// Definimos un tipo para playingGroups
+type PlayingGroupsType = boolean | undefined;
+
+function DraggablePlayer({ player, index, playingGroups }: { player: Player; index: number, playingGroups: PlayingGroupsType }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: player.id,
   });
@@ -176,7 +178,7 @@ function DraggablePlayer({ player, index, playingGroups }: { player: Player; ind
     touchAction: 'none',
   };
 
-  const getPositionColor = (index: number, playingGroups: any) => {
+  const getPositionColor = (index: number, playingGroups: PlayingGroupsType) => {
     if (playingGroups !== undefined) {
       switch (index) {
         case 0: return 'bg-yellow-200';
@@ -194,7 +196,7 @@ function DraggablePlayer({ player, index, playingGroups }: { player: Player; ind
       style={style}
       {...listeners}
       {...attributes}
-      className={`mb-2 p-2 rounded flex justify-between items-center ${getPositionColor(index, playingGroups || [])} ${isDragging ? 'opacity-50' : ''}`}
+      className={`mb-2 p-2 rounded flex justify-between items-center ${getPositionColor(index, playingGroups)} ${isDragging ? 'opacity-50' : ''}`}
     >
       <span className="mr-2 font-bold">{index + 1}</span>
       <span className="truncate flex-grow">{player.name} - {player.level}</span>
@@ -203,7 +205,6 @@ function DraggablePlayer({ player, index, playingGroups }: { player: Player; ind
 }
 
 export default function TournamentView() {
-  const router = useRouter()
   const [tournaments, setTournaments] = useState<Tournament[]>([])
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
   const [loading, setLoading] = useState(true)
@@ -219,7 +220,7 @@ export default function TournamentView() {
   const [matchStatus, setMatchStatus] = useState<{ [key: number]: boolean }>({})
   const [allMatchesFinished, setAllMatchesFinished] = useState(false)
   const [tournamentPhase, setTournamentPhase] = useState('groups')
-  const [tournamentStarted, setTournamentStarted] = useState(false)
+  //const [tournamentStarted, setTournamentStarted] = useState(false)
 
   useEffect(() => {
     fetchTournaments().then(data => {
@@ -262,7 +263,7 @@ export default function TournamentView() {
   const handleStartTournament = () => {
     setGroupsLocked(true)
     setPlayingGroups(true)
-    setTournamentStarted(true)
+    //setTournamentStarted(true)
     toast.success('Torneo comenzado con éxito')
   }
 
@@ -374,7 +375,6 @@ export default function TournamentView() {
 
   const handleAdvanceToKnockout = () => {
     setTournamentPhase('knockout')
-    // No usamos router.push aquí, solo cambiamos la fase
   }
 
   if (loading) {
