@@ -8,10 +8,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Users } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { Command, CommandInput,  } from "@/components/ui/command"
+import { Command, CommandInput, } from "@/components/ui/command"
 import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay, TouchSensor } from '@dnd-kit/core'
 import { useDroppable } from '@dnd-kit/core'
-import {CSS} from '@dnd-kit/utilities';
+import { CSS } from '@dnd-kit/utilities';
+import { useRouter } from 'next/navigation'
+import Llaves from './Llaves'
 
 // Simulated data types
 type Player = {
@@ -43,24 +45,52 @@ const fetchTournaments = async (): Promise<Tournament[]> => {
       players: [
         { id: '1', name: 'John Doe', birthDate: '1990-01-01', singles: true, doubles: true, level: 'Intermedio' },
         { id: '2', name: 'Jane Smith', birthDate: '1992-05-15', singles: true, doubles: false, level: 'Avanzado' },
-        { id: '3', name: 'Bob Johnson', birthDate: '1988-11-30', singles: false, doubles: true, level: 'Principiante' },
+        { id: '3', name: 'Bob Johnson', birthDate: '1988-11-30', singles: true, doubles: true, level: 'Principiante' },
         { id: '4', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio' },
         { id: '5', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '6', name: 'Eva Wilson', birthDate: '1993-07-12', singles: false, doubles: true, level: 'Principiante' },
+        { id: '6', name: 'Eva Wilson', birthDate: '1993-07-12', singles: true, doubles: true, level: 'Principiante' },
         { id: '7', name: 'María García', birthDate: '1994-08-22', singles: true, doubles: true, level: 'Avanzado' },
         { id: '8', name: 'Carlos Rodríguez', birthDate: '1989-03-17', singles: true, doubles: false, level: 'Intermedio' },
-        { id: '9', name: 'Ana Martínez', birthDate: '1997-11-05', singles: false, doubles: true, level: 'Principiante' },
+        { id: '9', name: 'Ana Martínez', birthDate: '1997-11-05', singles: true, doubles: true, level: 'Principiante' },
         { id: '10', name: 'Javier López', birthDate: '1993-06-30', singles: true, doubles: true, level: 'Avanzado' },
         { id: '11', name: 'Elena Sánchez', birthDate: '1996-02-18', singles: true, doubles: false, level: 'Principiante' },
         { id: '12', name: 'Miguel Herrera', birthDate: '1992-09-25', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '13', name: 'Laura Fernández', birthDate: '1998-04-10', singles: false, doubles: true, level: 'Principiante' },
+        { id: '13', name: 'Laura Fernández', birthDate: '1998-04-10', singles: true, doubles: true, level: 'Principiante' },
         { id: '14', name: 'Diego Gómez', birthDate: '1994-07-03', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '15', name: 'Sofía López', birthDate: '1995-12-14', singles: false, doubles: true, level: 'Principiante' },
+        { id: '15', name: 'Sofía López', birthDate: '1995-12-14', singles: true, doubles: true, level: 'Principiante' },
         { id: '16', name: 'Andrés Ramírez', birthDate: '1990-08-09', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '17', name: 'Isabella Castro', birthDate: '1997-01-28', singles: false, doubles: true, level: 'Principiante' },
+        { id: '17', name: 'Isabella Castro', birthDate: '1997-01-28', singles: true, doubles: true, level: 'Principiante' },
         { id: '18', name: 'Emilio Gutiérrez', birthDate: '1993-05-19', singles: true, doubles: true, level: 'Avanzado' },
         { id: '19', name: 'Valeria Morales', birthDate: '1996-09-12', singles: true, doubles: false, level: 'Principiante' },
-        { id: '20', name: 'Mateo Pérez', birthDate: '1992-03-24', singles: true, doubles: true, level: 'Intermedio' }
+        { id: '20', name: 'Mateo Pérez', birthDate: '1992-03-24', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '21', name: 'Nicolás Gómez', birthDate: '1991-07-13', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '22', name: 'Camila Torres', birthDate: '1995-05-10', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '23', name: 'Fernando Rivas', birthDate: '1993-12-20', singles: true, doubles: true, level: 'Principiante' },
+        { id: '24', name: 'Clara Sánchez', birthDate: '1994-11-01', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '25', name: 'Lucas Blanco', birthDate: '1992-02-14', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '26', name: 'Marta Vázquez', birthDate: '1996-06-15', singles: true, doubles: true, level: 'Principiante' },
+        { id: '27', name: 'Sebastián Molina', birthDate: '1990-10-21', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '28', name: 'Patricia Ruiz', birthDate: '1997-09-07', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '29', name: 'Alberto Castillo', birthDate: '1993-04-18', singles: true, doubles: true, level: 'Principiante' },
+        { id: '30', name: 'Natalia Ramírez', birthDate: '1991-11-29', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '31', name: 'Gabriel Ortega', birthDate: '1992-08-22', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '32', name: 'Daniela Suárez', birthDate: '1995-10-17', singles: true, doubles: true, level: 'Principiante' },
+        { id: '33', name: 'Héctor Mendoza', birthDate: '1994-03-08', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '34', name: 'Lorena Peña', birthDate: '1990-12-27', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '35', name: 'Alejandro Gil', birthDate: '1996-05-19', singles: true, doubles: true, level: 'Principiante' },
+        { id: '36', name: 'Claudia Vargas', birthDate: '1992-09-06', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '37', name: 'Ignacio Paredes', birthDate: '1993-11-02', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '38', name: 'Paola Méndez', birthDate: '1997-07-24', singles: true, doubles: true, level: 'Principiante' },
+        { id: '39', name: 'Jorge Figueroa', birthDate: '1994-04-30', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '40', name: 'Carolina Navarro', birthDate: '1991-01-15', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '41', name: 'Ricardo Espinoza', birthDate: '1995-08-04', singles: true, doubles: true, level: 'Principiante' },
+        { id: '42', name: 'Lucía Rojas', birthDate: '1992-11-22', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '43', name: 'Sergio Delgado', birthDate: '1990-06-03', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '44', name: 'Carmen Estrada', birthDate: '1997-02-19', singles: true, doubles: true, level: 'Principiante' },
+        { id: '45', name: 'Manuel Torres', birthDate: '1993-09-11', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '46', name: 'Elisa Romero', birthDate: '1994-05-05', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '47', name: 'Esteban Silva', birthDate: '1991-10-10', singles: true, doubles: true, level: 'Principiante' },
+        { id: '48', name: 'Verónica Flores', birthDate: '1996-01-25', singles: true, doubles: true, level: 'Intermedio' }
       ]
     },
     {
@@ -68,9 +98,9 @@ const fetchTournaments = async (): Promise<Tournament[]> => {
       name: 'Winter Challenge 2023',
       date: '2023-12-10',
       players: [
-        { id: '21', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '22', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '23', name: 'Eva Wilson', birthDate: '1993-07-12', singles: false, doubles: true, level: 'Principiante' },
+        { id: '49', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio' },
+        { id: '50', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado' },
+        { id: '51', name: 'Eva Wilson', birthDate: '1993-07-12', singles: false, doubles: true, level: 'Principiante' },
         // Add more players as needed
       ]
     },
@@ -79,57 +109,53 @@ const fetchTournaments = async (): Promise<Tournament[]> => {
 
 // Function to organize players into groups
 const organizeGroups = (players: Player[]): Player[][] => {
-  const shuffledPlayers = [...players].sort(() => Math.random() - 0.5)
-  const AvanzadoPlayers = shuffledPlayers.filter(p => p.level === 'Avanzado')
-  const IntermedioPlayers = shuffledPlayers.filter(p => p.level === 'Intermedio')
-  const PrincipiantePlayers = shuffledPlayers.filter(p => p.level === 'Principiante')
+  const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+  const AvanzadoPlayers = shuffledPlayers.filter(p => p.level === 'Avanzado');
+  const IntermedioPlayers = shuffledPlayers.filter(p => p.level === 'Intermedio');
+  const PrincipiantePlayers = shuffledPlayers.filter(p => p.level === 'Principiante');
 
-  const newGroups: Player[][] = []
+  const newGroups: Player[][] = [];
+  const groupSize = 3; // Tamaño del grupo
 
   const createGroup = (topLevel: Player[], midLevel: Player[], lowLevel: Player[]): Player[] => {
-    const group: Player[] = []
+    const group: Player[] = [];
 
-    if (topLevel.length > 0) {
-      group.push(topLevel.pop()!)
-    } else if (midLevel.length > 0) {
-      group.push(midLevel.pop()!)
-    } else if (lowLevel.length > 0) {
-      group.push(lowLevel.pop()!)
+    // Añadir jugadores de cada nivel al grupo
+    if (topLevel.length > 0) group.push(topLevel.shift()!);
+    if (midLevel.length > 0) group.push(midLevel.shift()!);
+    if (lowLevel.length > 0) group.push(lowLevel.shift()!);
+
+    // Completar el grupo con jugadores de cualquier nivel si es necesario
+    while (group.length < groupSize && (topLevel.length > 0 || midLevel.length > 0 || lowLevel.length > 0)) {
+      if (lowLevel.length > 0) group.push(lowLevel.shift()!);
+      else if (midLevel.length > 0) group.push(midLevel.shift()!);
+      else if (topLevel.length > 0) group.push(topLevel.shift()!);
     }
 
-    while (group.length < 3) {
-      if (lowLevel.length > 0) {
-        group.push(lowLevel.pop()!)
-      } else if (midLevel.length > 0) {
-        group.push(midLevel.pop()!)
-      } else if (topLevel.length > 0) {
-        group.push(topLevel.pop()!)
-      } else {
-        group.push({ id: 'bye', name: 'Bye', birthDate: '', singles: false, doubles: false, level: 'Bye' })
-      }
-    }
+    return group;
+  };
 
-    return group
-  }
-
+  // Crear grupos hasta que no queden jugadores
   while (AvanzadoPlayers.length > 0 || IntermedioPlayers.length > 0 || PrincipiantePlayers.length > 0) {
-    if (PrincipiantePlayers.length >= 2) {
-      newGroups.push(createGroup(AvanzadoPlayers, IntermedioPlayers, PrincipiantePlayers))
-    } else if (IntermedioPlayers.length >= 2) {
-      newGroups.push(createGroup(AvanzadoPlayers, IntermedioPlayers, PrincipiantePlayers))
-    } else {
-      newGroups.push(createGroup(AvanzadoPlayers, IntermedioPlayers, PrincipiantePlayers))
-    }
+    const group = createGroup(AvanzadoPlayers, IntermedioPlayers, PrincipiantePlayers);
+    newGroups.push(group);
   }
 
-  return newGroups
+  // Añadir "bye" a los grupos incompletos
+  newGroups.forEach(group => {
+    while (group.length < groupSize) {
+      group.push({ id: `bye-${Math.random()}`, name: 'Bye', birthDate: '', singles: false, doubles: false, level: 'Bye' });
+    }
+  });
+
+  return newGroups;
 }
 
 export function Droppable({ id, children }: { id: string; children: React.ReactNode }) {
   const { setNodeRef, isOver } = useDroppable({ id })
 
   const style = {
-    opacity: isOver ? 1 : 0.5,
+    opacity: isOver ? 1 : 0.9,
   };
 
   return (
@@ -139,7 +165,7 @@ export function Droppable({ id, children }: { id: string; children: React.ReactN
   )
 }
 
-function DraggablePlayer({ player, index }: { player: Player; index: number }) {
+function DraggablePlayer({ player, index, playingGroups }: { player: Player; index: number, playingGroups: any }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: player.id,
   });
@@ -147,16 +173,28 @@ function DraggablePlayer({ player, index }: { player: Player; index: number }) {
   const style = {
     transform: CSS.Translate.toString(transform),
     cursor: 'grab',
-    touchAction: 'none', // Añade esta línea
+    touchAction: 'none',
+  };
+
+  const getPositionColor = (index: number, playingGroups: any) => {
+    if (playingGroups !== undefined) {
+      switch (index) {
+        case 0: return 'bg-yellow-200';
+        case 1: return 'bg-orange-200';
+        case 2: return 'bg-red-200';
+        default: return 'bg-gray-100';
+      }
+    }
+    return 'bg-gray-100';
   };
 
   return (
-    <li 
-      ref={setNodeRef} 
+    <li
+      ref={setNodeRef}
       style={style}
-      {...listeners} 
+      {...listeners}
       {...attributes}
-      className={`mb-2 p-2 bg-gray-100 rounded flex justify-between items-center ${isDragging ? 'opacity-50' : ''}`}
+      className={`mb-2 p-2 rounded flex justify-between items-center ${getPositionColor(index, playingGroups || [])} ${isDragging ? 'opacity-50' : ''}`}
     >
       <span className="mr-2 font-bold">{index + 1}</span>
       <span className="truncate flex-grow">{player.name} - {player.level}</span>
@@ -165,6 +203,7 @@ function DraggablePlayer({ player, index }: { player: Player; index: number }) {
 }
 
 export default function TournamentView() {
+  const router = useRouter()
   const [tournaments, setTournaments] = useState<Tournament[]>([])
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null)
   const [loading, setLoading] = useState(true)
@@ -177,6 +216,10 @@ export default function TournamentView() {
   const [groupsLocked, setGroupsLocked] = useState(false)
   const [playingGroups, setPlayingGroups] = useState(false)
   const [activePlayer, setActivePlayer] = useState<Player | null>(null)
+  const [matchStatus, setMatchStatus] = useState<{ [key: number]: boolean }>({})
+  const [allMatchesFinished, setAllMatchesFinished] = useState(false)
+  const [tournamentPhase, setTournamentPhase] = useState('groups')
+  const [tournamentStarted, setTournamentStarted] = useState(false)
 
   useEffect(() => {
     fetchTournaments().then(data => {
@@ -184,6 +227,12 @@ export default function TournamentView() {
       setLoading(false)
     })
   }, [])
+
+  useEffect(() => {
+    // Verifica si todos los partidos han finalizado
+    const allFinished = Object.values(matchStatus).every(status => status)
+    setAllMatchesFinished(allFinished && Object.keys(matchStatus).length === groups.length)
+  }, [matchStatus, groups])
 
   const handleTournamentSelect = (tournamentId: string) => {
     const tournament = tournaments.find(t => t.id === tournamentId)
@@ -201,19 +250,20 @@ export default function TournamentView() {
     }
   }
 
-  const handleOrganizeGroups = (category: 'singles' | 'doubles') => {
+  const handleOrganizeGroups = () => {
     if (selectedTournament) {
-      const playersInCategory = selectedTournament.players.filter(player => player[category])
+      const playersInCategory = selectedTournament.players.filter(player => player.singles)
       const organizedGroups = organizeGroups(playersInCategory)
       setGroups(organizedGroups)
-      setGroupsLocked(false) // Desbloquea los grupos cuando se reorganizan
+      setGroupsLocked(false)
     }
   }
 
-  const handleLockGroups = () => {
+  const handleStartTournament = () => {
     setGroupsLocked(true)
     setPlayingGroups(true)
-    toast.success('Grupos mantenidos con éxito')
+    setTournamentStarted(true)
+    toast.success('Torneo comenzado con éxito')
   }
 
   const handlePageChange = (newPage: number) => {
@@ -223,8 +273,8 @@ export default function TournamentView() {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab)
     setCurrentPage(0)
-    if (selectedTournament) {
-      const playersInCategory = selectedTournament.players.filter(player => player[tab as 'singles' | 'doubles'])
+    if (selectedTournament && tab === 'singles') {
+      const playersInCategory = selectedTournament.players.filter(player => player.singles)
       const organizedGroups = organizeGroups(playersInCategory)
       setGroups(organizedGroups)
     }
@@ -312,6 +362,21 @@ export default function TournamentView() {
     setActivePlayer(player || null);
   }
 
+  const toggleMatchStatus = (groupIndex: number) => {
+    setMatchStatus(prevStatus => {
+      const newStatus = {
+        ...prevStatus,
+        [groupIndex]: !prevStatus[groupIndex]
+      }
+      return newStatus
+    })
+  }
+
+  const handleAdvanceToKnockout = () => {
+    setTournamentPhase('knockout')
+    // No usamos router.push aquí, solo cambiamos la fase
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -373,9 +438,6 @@ export default function TournamentView() {
               <Button onClick={() => handleTabChange('singles')} className={activeTab === 'singles' ? 'bg-blue-500 text-white' : ''}>
                 Grupos Singles
               </Button>
-              <Button onClick={() => handleTabChange('doubles')} className={activeTab === 'doubles' ? 'bg-blue-500 text-white' : ''}>
-                Grupos Dobles
-              </Button>
             </div>
 
             {activeTab === 'inscritos' && (
@@ -425,52 +487,74 @@ export default function TournamentView() {
               </div>
             )}
 
-            {(activeTab === 'singles' || activeTab === 'doubles') && (
+            {activeTab === 'singles' && (
               <div>
                 <div className="flex space-x-2 mt-4">
                   <Button
-                    onClick={() => handleOrganizeGroups(activeTab)}
+                    onClick={handleOrganizeGroups}
                     disabled={groupsLocked}
                     className={`${groupsLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    <Users className="mr-2 h-4 w-4" /> Organizar Grupos de {activeTab === 'singles' ? 'Singles' : 'Dobles'}
+                    <Users className="mr-2 h-4 w-4" /> Organizar Grupos de Singles
                   </Button>
                   {groups.length > 0 && (
-                    <Button onClick={handleLockGroups} disabled={groupsLocked}>
-                      Mantener Grupos
+                    <Button onClick={handleStartTournament} disabled={groupsLocked}>
+                      Comenzar Torneo
                     </Button>
                   )}
                 </div>
-                {playingGroups && (
+                {playingGroups && tournamentPhase === 'groups' && (
                   <div className="mt-4 flex items-center justify-center">
                     <h3 className="text-xl font-bold mr-2">Jugando fase de grupos</h3>
                     <Loader2 className="w-6 h-6 animate-spin" />
                   </div>
                 )}
-                <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                    {groups.map((group, groupIndex) => (
-                      <Droppable key={`group-${groupIndex}`} id={groupIndex.toString()}>
-                        <div className="p-4 border rounded">
-                          <h3 className="font-bold mb-2">Grupo {groupIndex + 1}</h3>
-                          <ul className="space-y-2">
-                            {group.map((player, playerIndex) => (
-                              <DraggablePlayer key={player.id} player={player} index={playerIndex} />
-                            ))}
-                          </ul>
-                        </div>
-                      </Droppable>
-                    ))}
+                {allMatchesFinished && tournamentPhase === 'groups' && (
+                  <div className="flex justify-center mt-4">
+                    <Button onClick={handleAdvanceToKnockout} className="bg-green-500 text-white">
+                      Avanzar a la fase de llaves
+                    </Button>
                   </div>
-                  <DragOverlay>
-                    {activePlayer ? (
-                      <div className="p-2 bg-orange-400 text-white rounded shadow-lg flex items-center">
-                        <span className="mr-2 font-bold">{groups.flat().findIndex(p => p.id === activePlayer.id) + 1}</span>
-                        <span className="truncate flex-grow">{activePlayer.name} - {activePlayer.level}</span>
-                      </div>
-                    ) : null}
-                  </DragOverlay>
-                </DndContext>
+                )}
+                {tournamentPhase === 'groups' ? (
+                  <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                      {groups.map((group, groupIndex) => (
+                        <Droppable key={`group-${groupIndex}`} id={groupIndex.toString()}>
+                          <div className="p-4 border rounded">
+                            <h3 className="font-bold mb-2">Grupo {groupIndex + 1}</h3>
+                            <ul className="space-y-2">
+                              {group.map((player, playerIndex) => (
+                                <DraggablePlayer key={player.id} player={player} index={playerIndex} playingGroups={playingGroups} />
+                              ))}
+                            </ul>
+                            {playingGroups && (
+                              <div className="flex justify-center items-center"> {/* Añade items-center para alinear verticalmente */}
+                                <Button
+                                  onClick={() => toggleMatchStatus(groupIndex)}
+                                  className={`mt-2 flex items-center ${matchStatus[groupIndex] ? 'bg-teal-600' : 'bg-red-700'}`}
+                                >
+                                  {matchStatus[groupIndex] ? 'Partido finalizado' : 'Disputando partido'}
+                                  {!matchStatus[groupIndex] && <Loader2 className="ml-2 w-4 h-4 animate-spin text-white" />} {/* Loader blanco dentro del botón */}
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </Droppable>
+                      ))}
+                    </div>
+                    <DragOverlay>
+                      {activePlayer ? (
+                        <div className="p-2 bg-orange-400 text-white rounded shadow-lg flex items-center">
+                          <span className="mr-2 font-bold">{groups.flat().findIndex(p => p.id === activePlayer.id) + 1}</span>
+                          <span className="truncate flex-grow">{activePlayer.name} - {activePlayer.level}</span>
+                        </div>
+                      ) : null}
+                    </DragOverlay>
+                  </DndContext>
+                ) : (
+                  <Llaves groups={groups} />
+                )}
               </div>
             )}
           </CardContent>
