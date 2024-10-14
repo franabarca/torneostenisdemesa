@@ -20,10 +20,6 @@ type Enfrentamiento = {
   ganador: Jugador | null;
 }
 
-type LlavesProps = {
-  groups: Jugador[][];
-}
-
 export default function Llaves({ groups }: { groups: Jugador[][] }) {
   const [rondas, setRondas] = useState<Enfrentamiento[][]>([])
   const [resultadosSets, setResultadosSets] = useState<{ [key: number]: { ganador: number, perdedor: number } }>({})
