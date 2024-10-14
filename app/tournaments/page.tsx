@@ -4,9 +4,7 @@ import Footer from '../components/Footer'
 export default function TournamentsPage() {
   return (
     <>
-
       <TournamentView />
-
       <Footer />
     </>
   )

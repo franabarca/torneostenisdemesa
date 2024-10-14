@@ -22,6 +22,7 @@ type Player = {
   singles: boolean
   doubles: boolean
   level: 'Principiante' | 'Intermedio' | 'Avanzado' | 'Bye'
+  ranking: number
 }
 
 type Tournament = {
@@ -42,54 +43,54 @@ const fetchTournaments = async (): Promise<Tournament[]> => {
       name: 'Summer Slam 2023',
       date: '2023-07-15',
       players: [
-        { id: '1', name: 'John Doe', birthDate: '1990-01-01', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '2', name: 'Jane Smith', birthDate: '1992-05-15', singles: true, doubles: false, level: 'Avanzado' },
-        { id: '3', name: 'Bob Johnson', birthDate: '1988-11-30', singles: true, doubles: true, level: 'Principiante' },
-        { id: '4', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '5', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '6', name: 'Eva Wilson', birthDate: '1993-07-12', singles: true, doubles: true, level: 'Principiante' },
-        { id: '7', name: 'María García', birthDate: '1994-08-22', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '8', name: 'Carlos Rodríguez', birthDate: '1989-03-17', singles: true, doubles: false, level: 'Intermedio' },
-        { id: '9', name: 'Ana Martínez', birthDate: '1997-11-05', singles: true, doubles: true, level: 'Principiante' },
-        { id: '10', name: 'Javier López', birthDate: '1993-06-30', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '11', name: 'Elena Sánchez', birthDate: '1996-02-18', singles: true, doubles: false, level: 'Principiante' },
-        { id: '12', name: 'Miguel Herrera', birthDate: '1992-09-25', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '13', name: 'Laura Fernández', birthDate: '1998-04-10', singles: true, doubles: true, level: 'Principiante' },
-        { id: '14', name: 'Diego Gómez', birthDate: '1994-07-03', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '15', name: 'Sofía López', birthDate: '1995-12-14', singles: true, doubles: true, level: 'Principiante' },
-        { id: '16', name: 'Andrés Ramírez', birthDate: '1990-08-09', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '17', name: 'Isabella Castro', birthDate: '1997-01-28', singles: true, doubles: true, level: 'Principiante' },
-        { id: '18', name: 'Emilio Gutiérrez', birthDate: '1993-05-19', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '19', name: 'Valeria Morales', birthDate: '1996-09-12', singles: true, doubles: false, level: 'Principiante' },
-        { id: '20', name: 'Mateo Pérez', birthDate: '1992-03-24', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '21', name: 'Nicolás Gómez', birthDate: '1991-07-13', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '22', name: 'Camila Torres', birthDate: '1995-05-10', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '23', name: 'Fernando Rivas', birthDate: '1993-12-20', singles: true, doubles: true, level: 'Principiante' },
-        { id: '24', name: 'Clara Sánchez', birthDate: '1994-11-01', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '25', name: 'Lucas Blanco', birthDate: '1992-02-14', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '26', name: 'Marta Vázquez', birthDate: '1996-06-15', singles: true, doubles: true, level: 'Principiante' },
-        { id: '27', name: 'Sebastián Molina', birthDate: '1990-10-21', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '28', name: 'Patricia Ruiz', birthDate: '1997-09-07', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '29', name: 'Alberto Castillo', birthDate: '1993-04-18', singles: true, doubles: true, level: 'Principiante' },
-        { id: '30', name: 'Natalia Ramírez', birthDate: '1991-11-29', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '31', name: 'Gabriel Ortega', birthDate: '1992-08-22', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '32', name: 'Daniela Suárez', birthDate: '1995-10-17', singles: true, doubles: true, level: 'Principiante' },
-        { id: '33', name: 'Héctor Mendoza', birthDate: '1994-03-08', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '34', name: 'Lorena Peña', birthDate: '1990-12-27', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '35', name: 'Alejandro Gil', birthDate: '1996-05-19', singles: true, doubles: true, level: 'Principiante' },
-        { id: '36', name: 'Claudia Vargas', birthDate: '1992-09-06', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '37', name: 'Ignacio Paredes', birthDate: '1993-11-02', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '38', name: 'Paola Méndez', birthDate: '1997-07-24', singles: true, doubles: true, level: 'Principiante' },
-        { id: '39', name: 'Jorge Figueroa', birthDate: '1994-04-30', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '40', name: 'Carolina Navarro', birthDate: '1991-01-15', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '41', name: 'Ricardo Espinoza', birthDate: '1995-08-04', singles: true, doubles: true, level: 'Principiante' },
-        { id: '42', name: 'Lucía Rojas', birthDate: '1992-11-22', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '43', name: 'Sergio Delgado', birthDate: '1990-06-03', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '44', name: 'Carmen Estrada', birthDate: '1997-02-19', singles: true, doubles: true, level: 'Principiante' },
-        { id: '45', name: 'Manuel Torres', birthDate: '1993-09-11', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '46', name: 'Elisa Romero', birthDate: '1994-05-05', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '47', name: 'Esteban Silva', birthDate: '1991-10-10', singles: true, doubles: true, level: 'Principiante' },
-        { id: '48', name: 'Verónica Flores', birthDate: '1996-01-25', singles: true, doubles: true, level: 'Intermedio' }
+        { id: '1', name: 'John Doe', birthDate: '1990-01-01', singles: true, doubles: true, level: 'Intermedio', ranking: 120 },
+        { id: '2', name: 'Jane Smith', birthDate: '1992-05-15', singles: true, doubles: false, level: 'Avanzado', ranking: 100 },
+        { id: '3', name: 'Bob Johnson', birthDate: '1988-11-30', singles: true, doubles: true, level: 'Principiante', ranking: 80 },
+        { id: '4', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
+        { id: '5', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado', ranking: 90 },
+        { id: '6', name: 'Eva Wilson', birthDate: '1993-07-12', singles: true, doubles: true, level: 'Principiante', ranking: 70 },
+        { id: '7', name: 'María García', birthDate: '1994-08-22', singles: true, doubles: true, level: 'Avanzado', ranking: 130 },
+        { id: '8', name: 'Carlos Rodríguez', birthDate: '1989-03-17', singles: true, doubles: false, level: 'Intermedio', ranking: 105 },
+        { id: '9', name: 'Ana Martínez', birthDate: '1997-11-05', singles: true, doubles: true, level: 'Principiante', ranking: 65 },
+        { id: '10', name: 'Javier López', birthDate: '1993-06-30', singles: true, doubles: true, level: 'Avanzado', ranking: 95 },
+        { id: '11', name: 'Elena Sánchez', birthDate: '1996-02-18', singles: true, doubles: false, level: 'Principiante', ranking: 55 },
+        { id: '12', name: 'Miguel Herrera', birthDate: '1992-09-25', singles: true, doubles: true, level: 'Intermedio', ranking: 115 },
+        { id: '13', name: 'Laura Fernández', birthDate: '1998-04-10', singles: true, doubles: true, level: 'Principiante', ranking: 75 },
+        { id: '14', name: 'Diego Gómez', birthDate: '1994-07-03', singles: true, doubles: true, level: 'Avanzado', ranking: 125 },
+        { id: '15', name: 'Sofía López', birthDate: '1995-12-14', singles: true, doubles: true, level: 'Principiante', ranking: 60 },
+        { id: '16', name: 'Andrés Ramírez', birthDate: '1990-08-09', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
+        { id: '17', name: 'Isabella Castro', birthDate: '1997-01-28', singles: true, doubles: true, level: 'Principiante', ranking: 50 },
+        { id: '18', name: 'Emilio Gutiérrez', birthDate: '1993-05-19', singles: true, doubles: true, level: 'Avanzado', ranking: 105 },
+        { id: '19', name: 'Valeria Morales', birthDate: '1996-09-12', singles: true, doubles: false, level: 'Principiante', ranking: 45 },
+        { id: '20', name: 'Mateo Pérez', birthDate: '1992-03-24', singles: true, doubles: true, level: 'Intermedio', ranking: 100 },
+        { id: '21', name: 'Nicolás Gómez', birthDate: '1991-07-13', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
+        { id: '22', name: 'Camila Torres', birthDate: '1995-05-10', singles: true, doubles: true, level: 'Avanzado', ranking: 120 },
+        { id: '23', name: 'Fernando Rivas', birthDate: '1993-12-20', singles: true, doubles: true, level: 'Principiante', ranking: 60 },
+        { id: '24', name: 'Clara Sánchez', birthDate: '1994-11-01', singles: true, doubles: true, level: 'Intermedio', ranking: 115 },
+        { id: '25', name: 'Lucas Blanco', birthDate: '1992-02-14', singles: true, doubles: true, level: 'Avanzado', ranking: 125 },
+        { id: '26', name: 'Marta Vázquez', birthDate: '1996-06-15', singles: true, doubles: true, level: 'Principiante', ranking: 50 },
+        { id: '27', name: 'Sebastián Molina', birthDate: '1990-10-21', singles: true, doubles: true, level: 'Intermedio', ranking: 105 },
+        { id: '28', name: 'Patricia Ruiz', birthDate: '1997-09-07', singles: true, doubles: true, level: 'Avanzado', ranking: 135 },
+        { id: '29', name: 'Alberto Castillo', birthDate: '1993-04-18', singles: true, doubles: true, level: 'Principiante', ranking: 65 },
+        { id: '30', name: 'Natalia Ramírez', birthDate: '1991-11-29', singles: true, doubles: true, level: 'Intermedio', ranking: 115 },
+        { id: '31', name: 'Gabriel Ortega', birthDate: '1992-08-22', singles: true, doubles: true, level: 'Avanzado', ranking: 95 },
+        { id: '32', name: 'Daniela Suárez', birthDate: '1995-10-17', singles: true, doubles: true, level: 'Principiante', ranking: 55 },
+        { id: '33', name: 'Héctor Mendoza', birthDate: '1994-03-08', singles: true, doubles: true, level: 'Intermedio', ranking: 105 },
+        { id: '34', name: 'Lorena Peña', birthDate: '1990-12-27', singles: true, doubles: true, level: 'Avanzado', ranking: 125 },
+        { id: '35', name: 'Alejandro Gil', birthDate: '1996-05-19', singles: true, doubles: true, level: 'Principiante', ranking: 60 },
+        { id: '36', name: 'Claudia Vargas', birthDate: '1992-09-06', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
+        { id: '37', name: 'Ignacio Paredes', birthDate: '1993-11-02', singles: true, doubles: true, level: 'Avanzado', ranking: 130 },
+        { id: '38', name: 'Paola Méndez', birthDate: '1997-07-24', singles: true, doubles: true, level: 'Principiante', ranking: 45 },
+        { id: '39', name: 'Jorge Figueroa', birthDate: '1994-04-30', singles: true, doubles: true, level: 'Intermedio', ranking: 100 },
+        { id: '40', name: 'Carolina Navarro', birthDate: '1991-01-15', singles: true, doubles: true, level: 'Avanzado', ranking: 120 },
+        { id: '41', name: 'Ricardo Espinoza', birthDate: '1995-08-04', singles: true, doubles: true, level: 'Principiante', ranking: 50 },
+        { id: '42', name: 'Lucía Rojas', birthDate: '1992-11-22', singles: true, doubles: true, level: 'Intermedio', ranking: 115 },
+        { id: '43', name: 'Sergio Delgado', birthDate: '1990-06-03', singles: true, doubles: true, level: 'Avanzado', ranking: 125 },
+        { id: '44', name: 'Carmen Estrada', birthDate: '1997-02-19', singles: true, doubles: true, level: 'Principiante', ranking: 45 },
+        { id: '45', name: 'Manuel Torres', birthDate: '1993-09-11', singles: true, doubles: true, level: 'Intermedio', ranking: 100 },
+        { id: '46', name: 'Elisa Romero', birthDate: '1994-05-05', singles: true, doubles: true, level: 'Avanzado', ranking: 120 },
+        { id: '47', name: 'Esteban Silva', birthDate: '1991-10-10', singles: true, doubles: true, level: 'Principiante', ranking: 50 },
+        { id: '48', name: 'Verónica Flores', birthDate: '1996-01-25', singles: true, doubles: true, level: 'Intermedio', ranking: 110 }
       ]
     },
     {
@@ -97,9 +98,9 @@ const fetchTournaments = async (): Promise<Tournament[]> => {
       name: 'Winter Challenge 2023',
       date: '2023-12-10',
       players: [
-        { id: '49', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio' },
-        { id: '50', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado' },
-        { id: '51', name: 'Eva Wilson', birthDate: '1993-07-12', singles: false, doubles: true, level: 'Principiante' },
+        { id: '49', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
+        { id: '50', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado', ranking: 90 },
+        { id: '51', name: 'Eva Wilson', birthDate: '1993-07-12', singles: false, doubles: true, level: 'Principiante', ranking: 70 },
         // Add more players as needed
       ]
     },
@@ -143,7 +144,7 @@ const organizeGroups = (players: Player[]): Player[][] => {
   // Añadir "bye" a los grupos incompletos
   newGroups.forEach(group => {
     while (group.length < groupSize) {
-      group.push({ id: `bye-${Math.random()}`, name: 'Bye', birthDate: '', singles: false, doubles: false, level: 'Bye' });
+      group.push({ id: `bye-${Math.random()}`, name: 'Bye', birthDate: '', singles: false, doubles: false, level: 'Bye', ranking: 0 });
     }
   });
 
@@ -182,7 +183,7 @@ function DraggablePlayer({ player, index, playingGroups }: { player: Player; ind
     if (playingGroups !== undefined) {
       switch (index) {
         case 0: return 'bg-yellow-200';
-        case 1: return 'bg-orange-200';
+        case 1: return 'bg-yellow-200';
         case 2: return 'bg-red-200';
         default: return 'bg-gray-100';
       }
