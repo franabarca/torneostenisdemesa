@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 type Jugador = {
   id: string;
@@ -14,7 +14,7 @@ type Jugador = {
 }
 
 type Enfrentamiento = {
-  id: number;
+  id: string;
   jugador1: Jugador | null;
   jugador2: Jugador | null;
   ganador: Jugador | null;
@@ -22,12 +22,12 @@ type Enfrentamiento = {
 
 export default function Llaves({ groups }: { groups: Jugador[][] }) {
   const [rondas, setRondas] = useState<Enfrentamiento[][]>([])
-  const [resultadosSets, setResultadosSets] = useState<{ [key: number]: { ganador: number, perdedor: number } }>({})
-  const [modalVisible, setModalVisible] = useState(false)
+  const [resultadosSets, setResultadosSets] = useState<{ [key: string]: { ganador: number, perdedor: number } }>({})
   const [currentEnfrentamiento, setCurrentEnfrentamiento] = useState<{ rondaIndex: number, enfrentamientoIndex: number } | null>(null)
   const [setsJugador1, setSetsJugador1] = useState(0)
   const [setsJugador2, setSetsJugador2] = useState(0)
   const [error, setError] = useState("")
+  const [openPopoverId, setOpenPopoverId] = useState<string | null>(null)
 
   useEffect(() => {
     const jugadoresClasificados = obtenerJugadoresClasificados(groups);
@@ -85,7 +85,7 @@ export default function Llaves({ groups }: { groups: Jugador[][] }) {
     // Función auxiliar para crear un enfrentamiento
     const crearEnfrentamiento = (seed1: number, seed2: number) => {
       enfrentamientos.push({
-        id: enfrentamientos.length + 1,
+        id: `${enfrentamientos.length + 1}`,
         jugador1: jugadoresConSeed.find(j => j.seed === seed1) || null,
         jugador2: jugadoresConSeed.find(j => j.seed === seed2) || null,
         ganador: null
@@ -198,7 +198,7 @@ export default function Llaves({ groups }: { groups: Jugador[][] }) {
 
       if (!nuevasRondas[siguienteRondaIndex][nuevoEnfrentamientoIndex]) {
         nuevasRondas[siguienteRondaIndex][nuevoEnfrentamientoIndex] = {
-          id: nuevasRondas[siguienteRondaIndex].length + 1,
+          id: `${siguienteRondaIndex}-${nuevoEnfrentamientoIndex}`,
           jugador1: null,
           jugador2: null,
           ganador: null
@@ -221,11 +221,6 @@ export default function Llaves({ groups }: { groups: Jugador[][] }) {
 
   const nombresRondas = ["Llave de 16", "Octavos de Final", "Cuartos de Final", "Semifinal", "Final"];
 
-  const abrirModal = (rondaIndex: number, enfrentamientoIndex: number) => {
-    setCurrentEnfrentamiento({ rondaIndex, enfrentamientoIndex });
-    setModalVisible(true);
-  };
-
   const guardarSets = () => {
     if (setsJugador1 === setsJugador2) {
       setError("Los sets no pueden ser iguales.");
@@ -238,12 +233,7 @@ export default function Llaves({ groups }: { groups: Jugador[][] }) {
     const { rondaIndex, enfrentamientoIndex } = currentEnfrentamiento!;
     const jugadorGanador = setsJugador1 > setsJugador2 ? rondas[rondaIndex][enfrentamientoIndex].jugador1! : rondas[rondaIndex][enfrentamientoIndex].jugador2!;
     avanzarJugador(rondaIndex, enfrentamientoIndex, jugadorGanador);
-    setModalVisible(false);
-    setError("");
-  };
-
-  const cancelar = () => {
-    setModalVisible(false);
+    setOpenPopoverId(null); // Cerrar el popover
     setError("");
   };
 
@@ -256,90 +246,99 @@ export default function Llaves({ groups }: { groups: Jugador[][] }) {
             <h2 className="text-xl font-semibold mb-4 text-center">{nombresRondas[rondaIndex]}</h2>
             <div className="space-y-4">
               {ronda.map((enfrentamiento, enfrentamientoIndex) => {
+                const popoverId = `${rondaIndex}-${enfrentamientoIndex}`;
                 const resultado = resultadosSets[enfrentamiento.id] || { ganador: null, perdedor: null };
+                const cardOpacity = enfrentamiento.ganador ? 'opacity-60' : 'opacity-100';
+
                 return (
-                  <Card 
-                    key={enfrentamiento.id} 
-                    className="bg-white shadow-md cursor-pointer" 
-                    onClick={() => abrirModal(rondaIndex, enfrentamientoIndex) }
+                  <Popover 
+                    key={popoverId}
+                    open={openPopoverId === popoverId} 
+                    onOpenChange={(open) => {
+                      if (open) {
+                        setOpenPopoverId(popoverId);
+                        setCurrentEnfrentamiento({ rondaIndex, enfrentamientoIndex });
+                      } else {
+                        setOpenPopoverId(null);
+                      }
+                    }}
                   >
-                    <CardContent className="p-4">
-                      {enfrentamiento.jugador1 && (
-                        <div className="flex justify-between items-center">
-                          <span className={`w-full mb-2 ${enfrentamiento.ganador === enfrentamiento.jugador1 ? 'text-orange-500 font-bold' : 'text-black'}`}>
-                            {enfrentamiento.jugador1.name}
-                          </span>
-                          {enfrentamiento.ganador && (
-                            <span className={`mb-2 ml-2 ${enfrentamiento.ganador === enfrentamiento.jugador1 ? 'text-orange-500 font-bold' : 'text-black'}`}>
-                              {enfrentamiento.ganador === enfrentamiento.jugador1 ? resultado.ganador : resultado.perdedor}
-                            </span>
+                    <PopoverTrigger asChild>
+                      <Card 
+                        className={`bg-white shadow-md cursor-pointer ${cardOpacity}`}
+                      >
+                        <CardContent className="p-4">
+                          {enfrentamiento.jugador1 && (
+                            <div className="flex justify-between items-center">
+                              <span className={`w-full mb-2 ${enfrentamiento.ganador === enfrentamiento.jugador1 ? 'text-orange-500 font-bold' : 'text-black'}`}>
+                                {enfrentamiento.jugador1.name}
+                              </span>
+                              {enfrentamiento.ganador && (
+                                <span className={`mb-2 ml-2 ${enfrentamiento.ganador === enfrentamiento.jugador1 ? 'text-orange-500 font-bold' : 'text-black'}`}>
+                                  {enfrentamiento.ganador === enfrentamiento.jugador1 ? resultado.ganador : resultado.perdedor}
+                                </span>
+                              )}
+                            </div>
                           )}
-                        </div>
-                      )}
-                      {enfrentamiento.jugador2 && (
-                        <div className="flex justify-between items-center">
-                          <span className={`w-full ${enfrentamiento.ganador === enfrentamiento.jugador2 ? 'text-orange-500 font-bold' : 'text-black'}`}>
-                            {enfrentamiento.jugador2.name}
-                          </span>
-                          {enfrentamiento.ganador && (
-                            <span className={`ml-2 ${enfrentamiento.ganador === enfrentamiento.jugador2 ? 'text-orange-500 font-bold' : 'text-black'}`}>
-                              {enfrentamiento.ganador === enfrentamiento.jugador2 ? resultado.ganador : resultado.perdedor}
-                            </span>
+                          {enfrentamiento.jugador2 && (
+                            <div className="flex justify-between items-center">
+                              <span className={`w-full ${enfrentamiento.ganador === enfrentamiento.jugador2 ? 'text-orange-500 font-bold' : 'text-black'}`}>
+                                {enfrentamiento.jugador2.name}
+                              </span>
+                              {enfrentamiento.ganador && (
+                                <span className={`ml-2 ${enfrentamiento.ganador === enfrentamiento.jugador2 ? 'text-orange-500 font-bold' : 'text-black'}`}>
+                                  {enfrentamiento.ganador === enfrentamiento.jugador2 ? resultado.ganador : resultado.perdedor}
+                                </span>
+                              )}
+                            </div>
                           )}
+                          {!enfrentamiento.jugador1 || !enfrentamiento.jugador2 ? (
+                            <p className="text-sm text-gray-500 text-center mt-2">Esperando oponente...</p>
+                          ) : null}
+                        </CardContent>
+                      </Card>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80">
+                      <h3 className="font-semibold mb-4">Ingrese los sets</h3>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <span className="mr-2">{enfrentamiento.jugador1?.name}</span>
+                          <select
+                            value={setsJugador1}
+                            onChange={(e) => setSetsJugador1(parseInt(e.target.value, 10))}
+                            className="w-auto p-2 border rounded"
+                          >
+                            {[0, 1, 2, 3].map(num => (
+                              <option key={num} value={num}>{num}</option>
+                            ))}
+                          </select>
                         </div>
-                      )}
-                      {!enfrentamiento.jugador1 || !enfrentamiento.jugador2 ? (
-                        <p className="text-sm text-gray-500 text-center mt-2">Esperando oponente...</p>
-                      ) : null}
-                    </CardContent>
-                  </Card>
+                        <div className="flex justify-between items-center">
+                          <span className="mr-2">{enfrentamiento.jugador2?.name}</span>
+                          <select
+                            value={setsJugador2}
+                            onChange={(e) => setSetsJugador2(parseInt(e.target.value, 10))}
+                            className="w-auto p-2 border rounded"
+                          >
+                            {[0, 1, 2, 3].map(num => (
+                              <option key={num} value={num}>{num}</option>
+                            ))}
+                          </select>
+                        </div>
+                        {error && <p className="text-red-500">{error}</p>}
+                        <div className="flex justify-end space-x-2 mt-4">
+                          <Button onClick={guardarSets}>Guardar</Button>
+                          <Button onClick={() => setOpenPopoverId(null)} variant="secondary">Cancelar</Button>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 );
               })}
             </div>
           </div>
         ))}
       </div>
-
-      {modalVisible && (
-        <Dialog open={modalVisible} onOpenChange={setModalVisible}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Ingrese los sets</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="mr-2">{rondas[currentEnfrentamiento!.rondaIndex][currentEnfrentamiento!.enfrentamientoIndex].jugador1?.name}</span>
-                <select
-                  value={setsJugador1}
-                  onChange={(e) => setSetsJugador1(parseInt(e.target.value, 10))}
-                  className="w-auto p-2 border rounded"
-                >
-                  {[0, 1, 2, 3].map(num => (
-                    <option key={num} value={num}>{num}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="mr-2">{rondas[currentEnfrentamiento!.rondaIndex][currentEnfrentamiento!.enfrentamientoIndex].jugador2?.name}</span>
-                <select
-                  value={setsJugador2}
-                  onChange={(e) => setSetsJugador2(parseInt(e.target.value, 10))}
-                  className="w-auto p-2 border rounded"
-                >
-                  {[0, 1, 2, 3].map(num => (
-                    <option key={num} value={num}>{num}</option>
-                  ))}
-                </select>
-              </div>
-              {error && <p className="text-red-500">{error}</p>}
-            </div>
-            <DialogFooter>
-              <Button onClick={guardarSets}>Guardar</Button>
-              <Button onClick={cancelar} variant="secondary">Cancelar</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
     </div>
   )
 }

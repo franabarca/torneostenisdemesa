@@ -427,11 +427,6 @@ export default function TournamentView() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Agregar el buscador aquí */}
-            <Command className="mb-4">
-              <CommandInput placeholder="Buscar jugador..." onValueChange={setSearchQuery} />
-            </Command>
-
             <div className="flex justify-center mb-4 space-x-2">
               <Button onClick={() => handleTabChange('inscritos')} className={activeTab === 'inscritos' ? 'bg-blue-500 text-white' : ''}>
                 Inscritos
@@ -442,50 +437,57 @@ export default function TournamentView() {
             </div>
 
             {activeTab === 'inscritos' && (
-              <div style={{ height: 'calc(8 * 3.8rem)', overflow: 'hidden' }}>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead style={{ width: '80px' }}>#</TableHead>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Singles</TableHead>
-                      <TableHead>Dobles</TableHead>
-                      <TableHead>Nivel</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedPlayers.map((player, index) => (
-                      <TableRow key={player.id} className="h-12">
-                        <TableCell>{currentPage * playersPerPage + index + 1}</TableCell>
-                        <TableCell>{player.name}</TableCell>
-                        <TableCell>{player.singles ? 'Sí' : 'No'}</TableCell>
-                        <TableCell>{player.doubles ? 'Sí' : 'No'}</TableCell>
-                        <TableCell>
-                          <Select
-                            defaultValue={player.level}
-                            onValueChange={(value: 'Principiante' | 'Intermedio' | 'Avanzado') => handleLevelChange(player.id, value)}
-                          >
-                            <SelectTrigger className="w-32">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Principiante">Principiante</SelectItem>
-                              <SelectItem value="Intermedio">Intermedio</SelectItem>
-                              <SelectItem value="Avanzado">Avanzado</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Button onClick={() => handleDeletePlayer(player.id)} className="bg-red-500 text-white">
-                            Eliminar
-                          </Button>
-                        </TableCell>
+              <>
+                {/* Mover el buscador aquí */}
+                <Command className="mb-4">
+                  <CommandInput placeholder="Buscar jugador..." onValueChange={setSearchQuery} />
+                </Command>
+
+                <div style={{ height: 'calc(8 * 3.8rem)', overflow: 'hidden' }}>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead style={{ width: '80px' }}>#</TableHead>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Singles</TableHead>
+                        <TableHead>Dobles</TableHead>
+                        <TableHead>Nivel</TableHead>
+                        <TableHead>Acciones</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedPlayers.map((player, index) => (
+                        <TableRow key={player.id} className="h-12">
+                          <TableCell>{currentPage * playersPerPage + index + 1}</TableCell>
+                          <TableCell>{player.name}</TableCell>
+                          <TableCell>{player.singles ? 'Sí' : 'No'}</TableCell>
+                          <TableCell>{player.doubles ? 'Sí' : 'No'}</TableCell>
+                          <TableCell>
+                            <Select
+                              defaultValue={player.level}
+                              onValueChange={(value: 'Principiante' | 'Intermedio' | 'Avanzado') => handleLevelChange(player.id, value)}
+                            >
+                              <SelectTrigger className="w-32">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Principiante">Principiante</SelectItem>
+                                <SelectItem value="Intermedio">Intermedio</SelectItem>
+                                <SelectItem value="Avanzado">Avanzado</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            <Button onClick={() => handleDeletePlayer(player.id)} className="bg-red-500 text-white">
+                              Eliminar
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
 
             {activeTab === 'singles' && (
