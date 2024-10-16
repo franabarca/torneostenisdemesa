@@ -8,19 +8,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Users } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { Command, CommandInput, } from "@/components/ui/command"
 import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay, TouchSensor } from '@dnd-kit/core'
 import { useDroppable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities';
+import { CSS } from '@dnd-kit/utilities'
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import Llaves from './Llaves'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 
 // Simulated data types
 type Player = {
   id: string
   name: string
   birthDate: string
-  singles: boolean
-  doubles: boolean
   level: 'Principiante' | 'Intermedio' | 'Avanzado' | 'Bye'
   ranking: number
 }
@@ -43,54 +43,54 @@ const fetchTournaments = async (): Promise<Tournament[]> => {
       name: 'Summer Slam 2023',
       date: '2023-07-15',
       players: [
-        { id: '1', name: 'John Doe', birthDate: '1990-01-01', singles: true, doubles: true, level: 'Intermedio', ranking: 120 },
-        { id: '2', name: 'Jane Smith', birthDate: '1992-05-15', singles: true, doubles: false, level: 'Avanzado', ranking: 100 },
-        { id: '3', name: 'Bob Johnson', birthDate: '1988-11-30', singles: true, doubles: true, level: 'Principiante', ranking: 80 },
-        { id: '4', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
-        { id: '5', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado', ranking: 90 },
-        { id: '6', name: 'Eva Wilson', birthDate: '1993-07-12', singles: true, doubles: true, level: 'Principiante', ranking: 70 },
-        { id: '7', name: 'María García', birthDate: '1994-08-22', singles: true, doubles: true, level: 'Avanzado', ranking: 130 },
-        { id: '8', name: 'Carlos Rodríguez', birthDate: '1989-03-17', singles: true, doubles: false, level: 'Intermedio', ranking: 105 },
-        { id: '9', name: 'Ana Martínez', birthDate: '1997-11-05', singles: true, doubles: true, level: 'Principiante', ranking: 65 },
-        { id: '10', name: 'Javier López', birthDate: '1993-06-30', singles: true, doubles: true, level: 'Avanzado', ranking: 95 },
-        { id: '11', name: 'Elena Sánchez', birthDate: '1996-02-18', singles: true, doubles: false, level: 'Principiante', ranking: 55 },
-        { id: '12', name: 'Miguel Herrera', birthDate: '1992-09-25', singles: true, doubles: true, level: 'Intermedio', ranking: 115 },
-        { id: '13', name: 'Laura Fernández', birthDate: '1998-04-10', singles: true, doubles: true, level: 'Principiante', ranking: 75 },
-        { id: '14', name: 'Diego Gómez', birthDate: '1994-07-03', singles: true, doubles: true, level: 'Avanzado', ranking: 125 },
-        { id: '15', name: 'Sofía López', birthDate: '1995-12-14', singles: true, doubles: true, level: 'Principiante', ranking: 60 },
-        { id: '16', name: 'Andrés Ramírez', birthDate: '1990-08-09', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
-        { id: '17', name: 'Isabella Castro', birthDate: '1997-01-28', singles: true, doubles: true, level: 'Principiante', ranking: 50 },
-        { id: '18', name: 'Emilio Gutiérrez', birthDate: '1993-05-19', singles: true, doubles: true, level: 'Avanzado', ranking: 105 },
-        { id: '19', name: 'Valeria Morales', birthDate: '1996-09-12', singles: true, doubles: false, level: 'Principiante', ranking: 45 },
-        { id: '20', name: 'Mateo Pérez', birthDate: '1992-03-24', singles: true, doubles: true, level: 'Intermedio', ranking: 100 },
-        { id: '21', name: 'Nicolás Gómez', birthDate: '1991-07-13', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
-        { id: '22', name: 'Camila Torres', birthDate: '1995-05-10', singles: true, doubles: true, level: 'Avanzado', ranking: 120 },
-        { id: '23', name: 'Fernando Rivas', birthDate: '1993-12-20', singles: true, doubles: true, level: 'Principiante', ranking: 60 },
-        { id: '24', name: 'Clara Sánchez', birthDate: '1994-11-01', singles: true, doubles: true, level: 'Intermedio', ranking: 115 },
-        { id: '25', name: 'Lucas Blanco', birthDate: '1992-02-14', singles: true, doubles: true, level: 'Avanzado', ranking: 125 },
-        { id: '26', name: 'Marta Vázquez', birthDate: '1996-06-15', singles: true, doubles: true, level: 'Principiante', ranking: 50 },
-        { id: '27', name: 'Sebastián Molina', birthDate: '1990-10-21', singles: true, doubles: true, level: 'Intermedio', ranking: 105 },
-        { id: '28', name: 'Patricia Ruiz', birthDate: '1997-09-07', singles: true, doubles: true, level: 'Avanzado', ranking: 135 },
-        { id: '29', name: 'Alberto Castillo', birthDate: '1993-04-18', singles: true, doubles: true, level: 'Principiante', ranking: 65 },
-        { id: '30', name: 'Natalia Ramírez', birthDate: '1991-11-29', singles: true, doubles: true, level: 'Intermedio', ranking: 115 },
-        { id: '31', name: 'Gabriel Ortega', birthDate: '1992-08-22', singles: true, doubles: true, level: 'Avanzado', ranking: 95 },
-        { id: '32', name: 'Daniela Suárez', birthDate: '1995-10-17', singles: true, doubles: true, level: 'Principiante', ranking: 55 },
-        { id: '33', name: 'Héctor Mendoza', birthDate: '1994-03-08', singles: true, doubles: true, level: 'Intermedio', ranking: 105 },
-        { id: '34', name: 'Lorena Peña', birthDate: '1990-12-27', singles: true, doubles: true, level: 'Avanzado', ranking: 125 },
-        { id: '35', name: 'Alejandro Gil', birthDate: '1996-05-19', singles: true, doubles: true, level: 'Principiante', ranking: 60 },
-        { id: '36', name: 'Claudia Vargas', birthDate: '1992-09-06', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
-        { id: '37', name: 'Ignacio Paredes', birthDate: '1993-11-02', singles: true, doubles: true, level: 'Avanzado', ranking: 130 },
-        { id: '38', name: 'Paola Méndez', birthDate: '1997-07-24', singles: true, doubles: true, level: 'Principiante', ranking: 45 },
-        { id: '39', name: 'Jorge Figueroa', birthDate: '1994-04-30', singles: true, doubles: true, level: 'Intermedio', ranking: 100 },
-        { id: '40', name: 'Carolina Navarro', birthDate: '1991-01-15', singles: true, doubles: true, level: 'Avanzado', ranking: 120 },
-        { id: '41', name: 'Ricardo Espinoza', birthDate: '1995-08-04', singles: true, doubles: true, level: 'Principiante', ranking: 50 },
-        { id: '42', name: 'Lucía Rojas', birthDate: '1992-11-22', singles: true, doubles: true, level: 'Intermedio', ranking: 115 },
-        { id: '43', name: 'Sergio Delgado', birthDate: '1990-06-03', singles: true, doubles: true, level: 'Avanzado', ranking: 125 },
-        { id: '44', name: 'Carmen Estrada', birthDate: '1997-02-19', singles: true, doubles: true, level: 'Principiante', ranking: 45 },
-        { id: '45', name: 'Manuel Torres', birthDate: '1993-09-11', singles: true, doubles: true, level: 'Intermedio', ranking: 100 },
-        { id: '46', name: 'Elisa Romero', birthDate: '1994-05-05', singles: true, doubles: true, level: 'Avanzado', ranking: 120 },
-        { id: '47', name: 'Esteban Silva', birthDate: '1991-10-10', singles: true, doubles: true, level: 'Principiante', ranking: 50 },
-        { id: '48', name: 'Verónica Flores', birthDate: '1996-01-25', singles: true, doubles: true, level: 'Intermedio', ranking: 110 }
+        { id: '1', name: 'John Doe', birthDate: '1990-01-01', level: 'Intermedio', ranking: 120 },
+        { id: '2', name: 'Jane Smith', birthDate: '1992-05-15', level: 'Avanzado', ranking: 100 },
+        { id: '3', name: 'Bob Johnson', birthDate: '1988-11-30', level: 'Principiante', ranking: 80 },
+        { id: '4', name: 'Alice Brown', birthDate: '1995-03-20', level: 'Intermedio', ranking: 110 },
+        { id: '5', name: 'Charlie Davis', birthDate: '1991-09-05', level: 'Avanzado', ranking: 90 },
+        { id: '6', name: 'Eva Wilson', birthDate: '1993-07-12', level: 'Principiante', ranking: 70 },
+        { id: '7', name: 'María García', birthDate: '1994-08-22', level: 'Avanzado', ranking: 130 },
+        { id: '8', name: 'Carlos Rodríguez', birthDate: '1989-03-17', level: 'Intermedio', ranking: 105 },
+        { id: '9', name: 'Ana Martínez', birthDate: '1997-11-05', level: 'Principiante', ranking: 65 },
+        { id: '10', name: 'Javier López', birthDate: '1993-06-30', level: 'Avanzado', ranking: 95 },
+        { id: '11', name: 'Elena Sánchez', birthDate: '1996-02-18', level: 'Principiante', ranking: 55 },
+        { id: '12', name: 'Miguel Herrera', birthDate: '1992-09-25', level: 'Intermedio', ranking: 115 },
+        { id: '13', name: 'Laura Fernández', birthDate: '1998-04-10', level: 'Principiante', ranking: 75 },
+        { id: '14', name: 'Diego Gómez', birthDate: '1994-07-03', level: 'Avanzado', ranking: 125 },
+        { id: '15', name: 'Sofía López', birthDate: '1995-12-14', level: 'Principiante', ranking: 60 },
+        { id: '16', name: 'Andrés Ramírez', birthDate: '1990-08-09', level: 'Intermedio', ranking: 110 },
+        { id: '17', name: 'Isabella Castro', birthDate: '1997-01-28', level: 'Principiante', ranking: 50 },
+        { id: '18', name: 'Emilio Gutiérrez', birthDate: '1993-05-19', level: 'Avanzado', ranking: 105 },
+        { id: '19', name: 'Valeria Morales', birthDate: '1996-09-12', level: 'Principiante', ranking: 45 },
+        { id: '20', name: 'Mateo Pérez', birthDate: '1992-03-24', level: 'Intermedio', ranking: 100 },
+        { id: '21', name: 'Nicolás Gómez', birthDate: '1991-07-13', level: 'Intermedio', ranking: 110 },
+        { id: '22', name: 'Camila Torres', birthDate: '1995-05-10', level: 'Avanzado', ranking: 120 },
+        { id: '23', name: 'Fernando Rivas', birthDate: '1993-12-20', level: 'Principiante', ranking: 60 },
+        { id: '24', name: 'Clara Sánchez', birthDate: '1994-11-01', level: 'Intermedio', ranking: 115 },
+        { id: '25', name: 'Lucas Blanco', birthDate: '1992-02-14', level: 'Avanzado', ranking: 125 },
+        { id: '26', name: 'Marta Vázquez', birthDate: '1996-06-15', level: 'Principiante', ranking: 50 },
+        { id: '27', name: 'Sebastián Molina', birthDate: '1990-10-21', level: 'Intermedio', ranking: 105 },
+        { id: '28', name: 'Patricia Ruiz', birthDate: '1997-09-07', level: 'Avanzado', ranking: 135 },
+        { id: '29', name: 'Alberto Castillo', birthDate: '1993-04-18', level: 'Principiante', ranking: 65 },
+        { id: '30', name: 'Natalia Ramírez', birthDate: '1991-11-29', level: 'Intermedio', ranking: 115 },
+        { id: '31', name: 'Gabriel Ortega', birthDate: '1992-08-22', level: 'Avanzado', ranking: 95 },
+        { id: '32', name: 'Daniela Suárez', birthDate: '1995-10-17', level: 'Principiante', ranking: 55 },
+        { id: '33', name: 'Héctor Mendoza', birthDate: '1994-03-08', level: 'Intermedio', ranking: 105 },
+        { id: '34', name: 'Lorena Peña', birthDate: '1990-12-27', level: 'Avanzado', ranking: 125 },
+        { id: '35', name: 'Alejandro Gil', birthDate: '1996-05-19', level: 'Principiante', ranking: 60 },
+        { id: '36', name: 'Claudia Vargas', birthDate: '1992-09-06', level: 'Intermedio', ranking: 110 },
+        { id: '37', name: 'Ignacio Paredes', birthDate: '1993-11-02', level: 'Avanzado', ranking: 130 },
+        { id: '38', name: 'Paola Méndez', birthDate: '1997-07-24', level: 'Principiante', ranking: 45 },
+        { id: '39', name: 'Jorge Figueroa', birthDate: '1994-04-30', level: 'Intermedio', ranking: 100 },
+        { id: '40', name: 'Carolina Navarro', birthDate: '1991-01-15', level: 'Avanzado', ranking: 120 },
+        { id: '41', name: 'Ricardo Espinoza', birthDate: '1995-08-04', level: 'Principiante', ranking: 50 },
+        { id: '42', name: 'Lucía Rojas', birthDate: '1992-11-22', level: 'Intermedio', ranking: 115 },
+        { id: '43', name: 'Sergio Delgado', birthDate: '1990-06-03', level: 'Avanzado', ranking: 125 },
+        { id: '44', name: 'Carmen Estrada', birthDate: '1997-02-19', level: 'Principiante', ranking: 45 },
+        { id: '45', name: 'Manuel Torres', birthDate: '1993-09-11', level: 'Intermedio', ranking: 100 },
+        { id: '46', name: 'Elisa Romero', birthDate: '1994-05-05', level: 'Avanzado', ranking: 120 },
+        { id: '47', name: 'Esteban Silva', birthDate: '1991-10-10', level: 'Principiante', ranking: 50 },
+        { id: '48', name: 'Verónica Flores', birthDate: '1996-01-25', level: 'Intermedio', ranking: 110 }
       ]
     },
     {
@@ -98,9 +98,9 @@ const fetchTournaments = async (): Promise<Tournament[]> => {
       name: 'Winter Challenge 2023',
       date: '2023-12-10',
       players: [
-        { id: '49', name: 'Alice Brown', birthDate: '1995-03-20', singles: true, doubles: true, level: 'Intermedio', ranking: 110 },
-        { id: '50', name: 'Charlie Davis', birthDate: '1991-09-05', singles: true, doubles: true, level: 'Avanzado', ranking: 90 },
-        { id: '51', name: 'Eva Wilson', birthDate: '1993-07-12', singles: false, doubles: true, level: 'Principiante', ranking: 70 },
+        { id: '49', name: 'Alice Brown', birthDate: '1995-03-20', level: 'Intermedio', ranking: 110 },
+        { id: '50', name: 'Charlie Davis', birthDate: '1991-09-05', level: 'Avanzado', ranking: 90 },
+        { id: '51', name: 'Eva Wilson', birthDate: '1993-07-12', level: 'Principiante', ranking: 70 },
         // Add more players as needed
       ]
     },
@@ -144,7 +144,7 @@ const organizeGroups = (players: Player[]): Player[][] => {
   // Añadir "bye" a los grupos incompletos
   newGroups.forEach(group => {
     while (group.length < groupSize) {
-      group.push({ id: `bye-${Math.random()}`, name: 'Bye', birthDate: '', singles: false, doubles: false, level: 'Bye', ranking: 0 });
+      group.push({ id: `bye-${Math.random()}`, name: 'Bye', birthDate: '', level: 'Bye', ranking: 0 });
     }
   });
 
@@ -152,41 +152,47 @@ const organizeGroups = (players: Player[]): Player[][] => {
 }
 
 export function Droppable({ id, children }: { id: string; children: React.ReactNode }) {
-  const { setNodeRef, isOver } = useDroppable({ id })
-
-  const style = {
-    opacity: isOver ? 1 : 0.9,
-  };
+  const { setNodeRef } = useDroppable({ id });
 
   return (
-    <div ref={setNodeRef} style={style} className={`group ${isOver ? 'bg-orange-100' : ''}`}>
+    <div ref={setNodeRef} className="group">
       {children}
     </div>
-  )
+  );
 }
 
 // Definimos un tipo para playingGroups
 type PlayingGroupsType = boolean | undefined;
 
-function DraggablePlayer({ player, index, playingGroups }: { player: Player; index: number, playingGroups: PlayingGroupsType }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+function SortablePlayer({ player, index, playingGroups, groupsFinished }: { player: Player; index: number, playingGroups: PlayingGroupsType, groupsFinished: boolean }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ 
     id: player.id,
+    disabled: groupsFinished // Deshabilita el sorting cuando los grupos están finalizados
   });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
-    cursor: 'grab',
-    touchAction: 'none',
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
   };
 
-  const getPositionColor = (index: number, playingGroups: PlayingGroupsType) => {
+  const getPositionColor = (index: number, playingGroups: PlayingGroupsType, groupsFinished: boolean) => {
     if (playingGroups !== undefined) {
+      let color = '';
       switch (index) {
-        case 0: return 'bg-yellow-200';
-        case 1: return 'bg-yellow-200';
-        case 2: return 'bg-red-200';
-        default: return 'bg-gray-100';
+        case 0: color = 'bg-yellow-200'; break;
+        case 1: color = 'bg-yellow-200'; break;
+        case 2: color = 'bg-red-200'; break;
+        default: color = 'bg-gray-100';
       }
+      return groupsFinished ? `${color} opacity-50` : color;
     }
     return 'bg-gray-100';
   };
@@ -195,9 +201,9 @@ function DraggablePlayer({ player, index, playingGroups }: { player: Player; ind
     <li
       ref={setNodeRef}
       style={style}
-      {...listeners}
       {...attributes}
-      className={`mb-2 p-2 rounded flex justify-between items-center ${getPositionColor(index, playingGroups)} ${isDragging ? 'opacity-50' : ''}`}
+      {...listeners}
+      className={`mb-2 p-2 rounded flex justify-between items-center ${getPositionColor(index, playingGroups, groupsFinished)}`}
     >
       <span className="mr-2 font-bold">{index + 1}</span>
       <span className="truncate flex-grow">{player.name} - {player.level}</span>
@@ -221,6 +227,10 @@ export default function TournamentView() {
   const [matchStatus, setMatchStatus] = useState<{ [key: number]: boolean }>({})
   const [allMatchesFinished, setAllMatchesFinished] = useState(false)
   const [tournamentPhase, setTournamentPhase] = useState('groups')
+  const [groupsFinished, setGroupsFinished] = useState(false)
+  const [editingGroups, setEditingGroups] = useState(false)
+  const [tempGroups, setTempGroups] = useState<Player[][]>([])
+  const [showEditDialog, setShowEditDialog] = useState(false)
   //const [tournamentStarted, setTournamentStarted] = useState(false)
 
   useEffect(() => {
@@ -254,8 +264,7 @@ export default function TournamentView() {
 
   const handleOrganizeGroups = () => {
     if (selectedTournament) {
-      const playersInCategory = selectedTournament.players.filter(player => player.singles)
-      const organizedGroups = organizeGroups(playersInCategory)
+      const organizedGroups = organizeGroups(selectedTournament.players)
       setGroups(organizedGroups)
       setGroupsLocked(false)
     }
@@ -275,10 +284,11 @@ export default function TournamentView() {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab)
     setCurrentPage(0)
-    if (selectedTournament && tab === 'singles') {
-      const playersInCategory = selectedTournament.players.filter(player => player.singles)
-      const organizedGroups = organizeGroups(playersInCategory)
-      setGroups(organizedGroups)
+    if (selectedTournament && tab === 'grupos') {
+      if (groups.length === 0) {
+        const organizedGroups = organizeGroups(selectedTournament.players)
+        setGroups(organizedGroups)
+      }
     }
   }
 
@@ -314,9 +324,9 @@ export default function TournamentView() {
     : []
 
   const paginatedPlayers = searchQuery
-    ? filteredPlayers.slice(currentPage * playersPerPage, (currentPage + 1) * playersPerPage)
+    ? (filteredPlayers || []).slice(currentPage * playersPerPage, (currentPage + 1) * playersPerPage)
     : selectedTournament
-      ? selectedTournament.players.slice(currentPage * playersPerPage, (currentPage + 1) * playersPerPage)
+      ? (selectedTournament.players || []).slice(currentPage * playersPerPage, (currentPage + 1) * playersPerPage)
       : []
 
   const totalPages = searchQuery
@@ -341,41 +351,79 @@ export default function TournamentView() {
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event
+    if (groupsFinished) return;
+    
+    const { active, over } = event;
     if (over && active.id !== over.id) {
-      const playerId = active.id as string;
-      const fromGroup = groups.findIndex(group => group.some(p => p.id === playerId));
-      const toGroup = parseInt(over.id as string, 10);
-      if (fromGroup !== -1 && !isNaN(toGroup)) {
-        const playerIndex = groups[fromGroup].findIndex(p => p.id === playerId);
-        if (playerIndex !== -1) {
-          const newGroups = [...groups];
-          const player = newGroups[fromGroup].splice(playerIndex, 1)[0];
-          newGroups[toGroup].unshift(player); // Añade el jugador al principio del nuevo grupo
-          setGroups(newGroups);
+      setTempGroups((prevGroups) => {
+        const activeGroupIndex = prevGroups.findIndex(group => group.some(player => player.id === active.id));
+        const overGroupIndex = prevGroups.findIndex(group => group.some(player => player.id === over.id));
+        
+        if (activeGroupIndex !== -1 && overGroupIndex !== -1) {
+          const newGroups = [...prevGroups];
+          const activeGroup = [...newGroups[activeGroupIndex]];
+          const overGroup = [...newGroups[overGroupIndex]];
+          
+          const activePlayerIndex = activeGroup.findIndex(player => player.id === active.id);
+          const overPlayerIndex = overGroup.findIndex(player => player.id === over.id);
+          
+          const [movedPlayer] = activeGroup.splice(activePlayerIndex, 1);
+          
+          if (activeGroupIndex === overGroupIndex) {
+            // Cambio dentro del mismo grupo
+            activeGroup.splice(overPlayerIndex, 0, movedPlayer);
+            newGroups[activeGroupIndex] = activeGroup;
+          } else {
+            // Cambio entre grupos diferentes
+            overGroup.splice(overPlayerIndex, 0, movedPlayer);
+            newGroups[activeGroupIndex] = activeGroup;
+            newGroups[overGroupIndex] = overGroup;
+          }
+          
+          return newGroups;
         }
-      }
+        
+        return prevGroups;
+      });
     }
-  }
+  };
 
   const handleDragStart = (event: DragStartEvent) => {
+    if (groupsFinished) return; // No hacer nada si los grupos están finalizados
+    
     const playerId = event.active.id as string;
     const player = groups.flat().find(p => p.id === playerId);
     setActivePlayer(player || null);
   }
 
   const toggleMatchStatus = (groupIndex: number) => {
-    setMatchStatus(prevStatus => {
-      const newStatus = {
-        ...prevStatus,
-        [groupIndex]: !prevStatus[groupIndex]
-      }
-      return newStatus
-    })
+    setMatchStatus(prevStatus => ({
+      ...prevStatus,
+      [groupIndex]: !prevStatus[groupIndex]
+    }))
   }
 
   const handleAdvanceToKnockout = () => {
     setTournamentPhase('knockout')
+    setGroupsFinished(true)
+    setActiveTab('llaves')  // Añade esta línea
+  }
+
+  const handleEditGroups = () => {
+    setShowEditDialog(true)
+  }
+
+  const confirmEditGroups = () => {
+    setEditingGroups(true)
+    setGroupsFinished(false)
+    setTempGroups([...groups])
+    setShowEditDialog(false)
+  }
+
+  const handleSaveGroups = () => {
+    setEditingGroups(false)
+    setGroupsFinished(true)
+    setGroups([...tempGroups]) // Actualiza los grupos principales con los temporales
   }
 
   if (loading) {
@@ -427,21 +475,42 @@ export default function TournamentView() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-center mb-4 space-x-2">
-              <Button onClick={() => handleTabChange('inscritos')} className={activeTab === 'inscritos' ? 'bg-blue-500 text-white' : ''}>
-                Inscritos
-              </Button>
-              <Button onClick={() => handleTabChange('singles')} className={activeTab === 'singles' ? 'bg-blue-500 text-white' : ''}>
-                Grupos Singles
-              </Button>
-            </div>
-
-            {activeTab === 'inscritos' && (
-              <>
-                {/* Mover el buscador aquí */}
-                <Command className="mb-4">
-                  <CommandInput placeholder="Buscar jugador..." onValueChange={setSearchQuery} />
-                </Command>
+            <Tabs value={activeTab} onValueChange={handleTabChange}>
+              <TabsList className="grid w-full grid-cols-3 gap-1">
+                <TabsTrigger 
+                  value="inscritos"
+                  className="data-[state=active]:bg-orange-500 data-[state=active]:text-white hover:bg-orange-300 hover:text-white"
+                >
+                  Inscritos
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="grupos"
+                  className="data-[state=active]:bg-orange-500 data-[state=active]:text-white hover:bg-orange-300 hover:text-white"
+                >
+                  Fase de Grupos
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="llaves" 
+                  disabled={tournamentPhase !== 'knockout'}
+                  className="data-[state=active]:bg-orange-500 data-[state=active]:text-white hover:bg-orange-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Fase de Llaves
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="inscritos">
+                {/* Contenido de la pestaña Inscritos */}
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    placeholder="Buscar jugador..."
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value)
+                      setCurrentPage(0)
+                    }}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
 
                 <div style={{ height: 'calc(8 * 3.8rem)', overflow: 'hidden' }}>
                   <Table>
@@ -449,8 +518,6 @@ export default function TournamentView() {
                       <TableRow>
                         <TableHead style={{ width: '80px' }}>#</TableHead>
                         <TableHead>Nombre</TableHead>
-                        <TableHead>Singles</TableHead>
-                        <TableHead>Dobles</TableHead>
                         <TableHead>Nivel</TableHead>
                         <TableHead>Acciones</TableHead>
                       </TableRow>
@@ -460,8 +527,6 @@ export default function TournamentView() {
                         <TableRow key={player.id} className="h-12">
                           <TableCell>{currentPage * playersPerPage + index + 1}</TableCell>
                           <TableCell>{player.name}</TableCell>
-                          <TableCell>{player.singles ? 'Sí' : 'No'}</TableCell>
-                          <TableCell>{player.doubles ? 'Sí' : 'No'}</TableCell>
                           <TableCell>
                             <Select
                               defaultValue={player.level}
@@ -487,60 +552,83 @@ export default function TournamentView() {
                     </TableBody>
                   </Table>
                 </div>
-              </>
-            )}
-
-            {activeTab === 'singles' && (
-              <div>
-                <div className="flex space-x-2 mt-4">
-                  <Button
-                    onClick={handleOrganizeGroups}
-                    disabled={groupsLocked}
-                    className={`${groupsLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  >
-                    <Users className="mr-2 h-4 w-4" /> Organizar Grupos de Singles
-                  </Button>
-                  {groups.length > 0 && (
-                    <Button onClick={handleStartTournament} disabled={groupsLocked}>
-                      Comenzar Torneo
+              </TabsContent>
+              <TabsContent value="grupos">
+                {/* Contenido de la pestaña Fase de Grupos */}
+                <div>
+                  <div className="flex space-x-2 mt-4">
+                    <Button
+                      onClick={handleOrganizeGroups}
+                      disabled={groupsLocked}
+                      className={`${groupsLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      <Users className="mr-2 h-4 w-4" /> Organizar Grupos de Singles
                     </Button>
+                    {groups.length > 0 && (
+                      <Button onClick={handleStartTournament} disabled={groupsLocked}>
+                        Comenzar Torneo
+                      </Button>
+                    )}
+                    {tournamentPhase === 'knockout' && !editingGroups && (
+                      <Button onClick={handleEditGroups} className="bg-yellow-500 text-white">
+                        Editar Grupos
+                      </Button>
+                    )}
+                    {editingGroups && (
+                      <Button onClick={handleSaveGroups} className="bg-green-500 text-white">
+                        Guardar Cambios
+                      </Button>
+                    )}
+                  </div>
+                  {playingGroups && tournamentPhase === 'groups' && !groupsFinished && (
+                    <div className="mt-4 flex items-center justify-center">
+                      <h3 className="text-xl font-bold mr-2">Jugando fase de grupos</h3>
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    </div>
                   )}
-                </div>
-                {playingGroups && tournamentPhase === 'groups' && (
-                  <div className="mt-4 flex items-center justify-center">
-                    <h3 className="text-xl font-bold mr-2">Jugando fase de grupos</h3>
-                    <Loader2 className="w-6 h-6 animate-spin" />
-                  </div>
-                )}
-                {allMatchesFinished && tournamentPhase === 'groups' && (
-                  <div className="flex justify-center mt-4">
-                    <Button onClick={handleAdvanceToKnockout} className="bg-green-500 text-white">
-                      Avanzar a la fase de llaves
-                    </Button>
-                  </div>
-                )}
-                {tournamentPhase === 'groups' ? (
-                  <DndContext sensors={sensors} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
+                  {groupsFinished && (
+                    <div className="mt-4 flex items-center justify-center">
+                      <h3 className="text-xl font-bold">Fase de grupos finalizada</h3>
+                    </div>
+                  )}
+                  {allMatchesFinished && tournamentPhase === 'groups' && (
+                    <div className="flex justify-center mt-4">
+                      <Button onClick={handleAdvanceToKnockout} className="bg-green-500 text-white">
+                        Avanzar a la fase de llaves
+                      </Button>
+                    </div>
+                  )}
+                  <DndContext 
+                    sensors={sensors} 
+                    onDragEnd={handleDragEnd} 
+                    onDragStart={handleDragStart}
+                  >
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                      {groups.map((group, groupIndex) => (
-                        <Droppable key={`group-${groupIndex}`} id={groupIndex.toString()}>
-                          <div className="p-4 border rounded">
+                      {(editingGroups ? tempGroups : groups).map((group, groupIndex) => (
+                        <Droppable key={`group-${groupIndex}`} id={`group-${groupIndex}`}>
+                          <div className={`p-4 border rounded ${groupsFinished && !editingGroups ? 'opacity-75' : ''}`}>
                             <h3 className="font-bold mb-2">Grupo {groupIndex + 1}</h3>
-                            <ul className="space-y-2">
-                              {group.map((player, playerIndex) => (
-                                <DraggablePlayer key={player.id} player={player} index={playerIndex} playingGroups={playingGroups} />
-                              ))}
-                            </ul>
+                            <SortableContext items={group.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                              <ul className="space-y-2">
+                                {group.map((player, playerIndex) => (
+                                  <SortablePlayer 
+                                    key={player.id} 
+                                    player={player} 
+                                    index={playerIndex} 
+                                    playingGroups={playingGroups}
+                                    groupsFinished={groupsFinished && !editingGroups}
+                                  />
+                                ))}
+                              </ul>
+                            </SortableContext>
                             {playingGroups && (
-                              <div className="flex justify-center items-center"> {/* Añade items-center para alinear verticalmente */}
-                                <Button
-                                  onClick={() => toggleMatchStatus(groupIndex)}
-                                  className={`mt-2 flex items-center ${matchStatus[groupIndex] ? 'bg-teal-600' : 'bg-red-700'}`}
-                                >
-                                  {matchStatus[groupIndex] ? 'Partido finalizado' : 'Disputando partido'}
-                                  {!matchStatus[groupIndex] && <Loader2 className="ml-2 w-4 h-4 animate-spin text-white" />} {/* Loader blanco dentro del botón */}
-                                </Button>
-                              </div>
+                              <Button
+                                onClick={() => toggleMatchStatus(groupIndex)}
+                                className={`mt-2 ${matchStatus[groupIndex] ? 'bg-green-500' : 'bg-blue-500'} text-white ${groupsFinished && !editingGroups ? 'opacity-50' : ''}`}
+                                disabled={groupsFinished && !editingGroups}
+                              >
+                                {matchStatus[groupIndex] ? 'Partido Finalizado' : 'Finalizar Partido'}
+                              </Button>
                             )}
                           </div>
                         </Droppable>
@@ -555,11 +643,15 @@ export default function TournamentView() {
                       ) : null}
                     </DragOverlay>
                   </DndContext>
-                ) : (
+                </div>
+              </TabsContent>
+              <TabsContent value="llaves">
+                {/* Contenido de la pestaña Fase de Llaves */}
+                {tournamentPhase === 'knockout' && (
                   <Llaves groups={groups} />
                 )}
-              </div>
-            )}
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       )}
@@ -590,6 +682,23 @@ export default function TournamentView() {
           </div>
         </div>
       )}
+
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar edición de grupos</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro que quieres editar los grupos? Ten en cuenta que la fase de llaves ya ha comenzado.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditDialog(false)}>Cancelar</Button>
+            <Button onClick={confirmEditGroups}
+            className="bg-orange-500 hover:bg-orange-400 text-white"
+            >Confirmar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
