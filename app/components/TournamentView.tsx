@@ -8,13 +8,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Loader2, Users } from "lucide-react"
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, useDraggable, DragStartEvent, DragOverlay, TouchSensor } from '@dnd-kit/core'
+import { DndContext, useSensors, useSensor, PointerSensor, DragEndEvent, DragStartEvent, DragOverlay, TouchSensor } from '@dnd-kit/core'
 import { useDroppable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
 import Llaves from './Llaves'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 // Simulated data types
 type Player = {
